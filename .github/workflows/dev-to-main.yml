@@ -3,7 +3,10 @@ name: Dev to Main CI/CD
 on:
   push:
     branches:
-      - main  # Trigger when changes are pushed to the main branch
+      - main  # Déclenche le workflow quand un push est effectué sur main
+  pull_request:
+    branches:
+      - main  # Déclenche aussi le workflow quand une PR est fusionnée dans main
 
 jobs:
   build-and-test:
@@ -47,8 +50,6 @@ jobs:
       - name: Run Frontend Unit Tests
         working-directory: ./frontend
         run: npm test
-
-      
 
   build-and-push-docker:
     name: Build and Push Docker Images
