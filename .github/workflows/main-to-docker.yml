@@ -6,54 +6,55 @@ on:
     types:
       - completed
 
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js environment
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
 
-      # Step 3: Install dependencies for Backend
-      - name: Install dependencies for Backend
-        working-directory: ./backend
-        run: npm install
+    - name: Install dependencies for Backend
+      run: |
+        cd backend
+        npm install
 
-      # Step 4: Install dependencies for Frontend
-      - name: Install dependencies for Frontend
-        working-directory: ./frontend
-        run: npm install
+    - name: Install dependencies for Frontend
+      run: |
+        cd frontend
+        npm install
 
-      # Step 5: Run Backend Unit Tests
-      - name: Run Backend Unit Tests
-        working-directory: ./backend
-        run: npm test
+    - name: Run E2E Tests
+      working-directory: ./e2e-tests
+      run: |
+        npm install
+        npm test
 
-      # Step 6: Run Frontend Unit Tests
-      - name: Run Frontend Unit Tests
-        working-directory: ./frontend
-        run: npm test
 
-      # Step 7: Install E2E Test Dependencies
-      - name: Install E2E Dependencies
-        working-directory: ./e2e-tests
-        run: npm install
 
-      # Step 8: Build and Push Docker Images
-      - name: Build and Push Docker Images
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker build -t $DOCKER_USERNAME/backend ./backend
-          docker build -t $DOCKER_USERNAME/frontend ./frontend
-          docker push $DOCKER_USERNAME/backend
-          docker push $DOCKER_USERNAME/frontend
+    - name: Run Backend Unit Tests
+      run: |
+        cd backend
+        npm test
+
+    - name: Run Frontend Unit Tests
+      run: |
+        cd frontend
+        npm test
+
+    - name: Build and Push Docker Images
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+        docker build -t $DOCKER_USERNAME/backend ./backend
+        docker build -t $DOCKER_USERNAME/frontend ./frontend
+        docker push $DOCKER_USERNAME/backend
+        docker push $DOCKER_USERNAME/frontend
