@@ -1,5 +1,10 @@
 name: CI/CD for Dev to Main
 
+
+permissions :
+  contents : write
+
+
 on:
   push:
     branches:
