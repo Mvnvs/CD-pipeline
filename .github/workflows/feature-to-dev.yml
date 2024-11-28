@@ -13,8 +13,7 @@ jobs:
     permissions:
       contents: write  # Permet à l'action de modifier le contenu du dépôt
       pull-requests: write  # Permet de créer et de gérer des pull requests
-      actions: write  # Permet de déclencher des actions, y compris de faire une fusion
-      admin: write  # Permet des actions administratives comme les fusions
+      actions: write  # Permet d'exécuter des actions, y compris faire une fusion
 
     steps:
       # Step 1: Checkout the code
