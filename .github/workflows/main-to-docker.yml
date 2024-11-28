@@ -6,64 +6,68 @@ on:
     types:
       - completed
 
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Étape 1 : Checkout du code source
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      # Étape 2 : Configuration de Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install dependencies for Backend
-      run: |
-        cd backend
-        npm install
+      # Étape 3 : Installation des dépendances Backend
+      - name: Install dependencies for Backend
+        working-directory: ./backend
+        run: npm install
 
-    - name: Install dependencies for Frontend
-      run: |
-        cd frontend
-        npm install
+      # Étape 4 : Installation des dépendances Frontend
+      - name: Install dependencies for Frontend
+        working-directory: ./frontend
+        run: npm install
 
-    - name: Run Backend Unit Tests
-      run: |
-        cd backend
-        npm test
+      # Étape 5 : Exécution des tests unitaires Backend
+      - name: Run Backend Unit Tests
+        working-directory: ./backend
+        run: npm test
 
-    - name: Run Frontend Unit Tests
-      run: |
-        cd frontend
-        npm test
-   
-    - name: Install Selenium WebDriver and ChromeDriver
-      run: |
-          
+      # Étape 6 : Exécution des tests unitaires Frontend
+      - name: Run Frontend Unit Tests
+        working-directory: ./frontend
+        run: npm test
+
+      # Étape 7 : Installation de Selenium WebDriver et ChromeDriver
+      - name: Install Selenium WebDriver and ChromeDriver
+        run: |
           npm install selenium-webdriver chromedriver
-  
-    - name: Start the Application
-      run: |
-          cd frontend
-          npm run start &
-          sleep 10  
-  
-    - name: Run E2E tests
-      run: |
-          cd e2e-tests
-          npm install
-          npx mocha test.js    
 
-    - name: Build and Push Docker Images
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: |
-        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-        docker build -t $DOCKER_USERNAME/backend ./backend
-        docker build -t $DOCKER_USERNAME/frontend ./frontend
-        docker push $DOCKER_USERNAME/backend
-        docker push $DOCKER_USERNAME/frontend
+      # Étape 8 : Démarrage du serveur Frontend
+      - name: Start the Frontend Application
+        working-directory: ./frontend
+        run: |
+          npm run start &
+          sleep 10  # Attendre que l'application démarre
+
+      # Étape 9 : Exécution des tests E2E
+      - name: Run E2E tests
+        working-directory: ./e2e-tests
+        run: |
+          npm install
+          npx mocha test.js
+
+      # Étape 10 : Construction et Push des images Docker
+      - name: Build and Push Docker Images
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker build -t $DOCKER_USERNAME/backend ./backend
+          docker build -t $DOCKER_USERNAME/frontend ./frontend
+          docker push $DOCKER_USERNAME/backend
+          docker push $DOCKER_USERNAME/frontend
