@@ -1,9 +1,9 @@
 name: Feature to Dev Workflow
 
 on:
-  push:
+  pull_request:
     branches:
-      - 'feature/*'
+      - dev
 
 jobs:
   build-and-test:
@@ -33,11 +33,3 @@ jobs:
       - name: Run Frontend Unit Tests
         working-directory: ./frontend
         run: npm test
-
-      - name: Merge feature into dev
-        uses: pascalgn/automerge-action@v0.14.3
-        with:
-          merge-method: merge
-          branch: dev
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
