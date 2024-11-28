@@ -11,42 +11,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
+      # Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js for Backend
+      # Set up Node.js for Backend
       - name: Set up Node.js for Backend
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Step 3: Install Backend Dependencies
+      # Install Backend Dependencies
       - name: Install Backend Dependencies
         working-directory: ./backend
         run: npm install
 
-      # Step 4: Install Frontend Dependencies
+      # Install Frontend Dependencies
       - name: Install Frontend Dependencies
         working-directory: ./frontend
         run: npm install
 
-      # Step 5: Run Backend Unit Tests
+      # Run Backend Unit Tests
       - name: Run Backend Unit Tests
         working-directory: ./backend
         run: npm test
 
-      # Step 6: Run Frontend Unit Tests
+      # Run Frontend Unit Tests
       - name: Run Frontend Unit Tests
         working-directory: ./frontend
         run: npm test
 
-      # Step 7: Merge Dev into Main
+      # Merge Dev into Main (Automatique)
       - name: Merge Dev into Main
-        uses: devmasx/merge-branch@v1.3.0
+        uses: peter-evans/create-pull-request@v5
         with:
-          type: merge            # Type de fusion : merge, squash, ou rebase
-          from_branch: dev       # Branche source
-          target_branch: main    # Branche cible
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main               # Branche cible
+          commit-message: "Auto-merge Dev into Main"
+          title: "Auto PR: Merge Dev into Main"
+          body: |
+            This Pull Request merges changes from `dev` into `main`.
