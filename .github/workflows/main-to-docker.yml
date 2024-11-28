@@ -18,7 +18,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '18'
 
     - name: Install dependencies for Backend
       run: |
@@ -30,6 +30,23 @@ jobs:
         cd frontend
         npm install
 
+    - name: Install Selenium WebDriver and ChromeDriver
+      run: |
+        # Installer les dépendances nécessaires pour selenium-webdriver et chromedriver
+        npm install selenium-webdriver chromedriver
+
+    - name: Start the Application
+      run: |
+        cd frontend
+        npm run start &
+        sleep 10  # Attendre que l'application se lance
+
+    - name: Run E2E tests
+      run: |
+        cd e2e-tests
+        npm install
+        npx mocha test.js
+
     - name: Run Backend Unit Tests
       run: |
         cd backend
@@ -39,23 +56,6 @@ jobs:
       run: |
         cd frontend
         npm test
-   
-    - name: Install Selenium WebDriver and ChromeDriver
-      run: |
-          
-          npm install selenium-webdriver chromedriver
-  
-    - name: Start the Application
-      run: |
-          cd frontend
-          npm run start &
-          sleep 10  
-  
-    - name: Run E2E tests
-      run: |
-          cd e2e-tests
-          npm install
-          npx mocha test.js    
 
     - name: Build and Push Docker Images
       env:
