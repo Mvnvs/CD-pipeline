@@ -1,82 +1,55 @@
-name: Dev to Main CI/CD
+name: CI/CD for Dev to Main
+
+
+permissions :
+  contents : write
+
 
 on:
   push:
     branches:
-      - main  # Déclenche le workflow quand un push est effectué sur main
-  pull_request:
-    branches:
-      - main  # Déclenche aussi le workflow quand une PR est fusionnée dans main
+      - dev
 
 jobs:
-  build-and-test:
-    name: Build, Test, and Run E2E
+  build-and-test-and-merge:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js (for both backend and frontend)
-      - name: Set up Node.js for Backend
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
 
-      - name: Set up Node.js for Frontend
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22'
+    - name: Install dependencies for Backend
+      run: |
+        cd backend
+        npm install
 
-      # Step 3: Install dependencies for frontend and backend
-      - name: Install Backend Dependencies
-        working-directory: ./backend
-        run: npm install
+    - name: Install dependencies for Frontend
+      run: |
+        cd frontend
+        npm install
 
-      - name: Install Frontend Dependencies
-        working-directory: ./frontend
-        run: npm install
+    - name: Run Backend Unit Tests
+      run: |
+        cd backend
+        npm test
 
-      - name: Install e2e Dependencies
-        working-directory: ./e2e-tests
-        run: npm install
+    - name: Run Frontend Unit Tests
+      run: |
+        cd frontend
+        npm test
 
-      # Step 4: Run Unit Tests for both backend and frontend
-      - name: Run Backend Unit Tests
-        working-directory: ./backend
-        run: npm test
-
-      - name: Run Frontend Unit Tests
-        working-directory: ./frontend
-        run: npm test
-
-  build-and-push-docker:
-    name: Build and Push Docker Images
-    needs: build-and-test
-    if: success()  # Trigger this only if the tests pass
-    runs-on: ubuntu-latest
-
-    steps:
-      # Step 1: Checkout the code
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      # Step 2: Log in to Docker Hub (public Docker repository)
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # Step 3: Install Docker Compose
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      # Step 4: Build and Push Docker Images
-      - name: Build and Push Docker Images
-        run: |
-          docker-compose build
-          docker-compose push
+    - name: Merge dev into main
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git fetch origin main
+        git checkout main
+        git merge dev --allow-unrelated-histories -X theirs --no-edit
+        git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
