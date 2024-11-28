@@ -1,6 +1,5 @@
 name: Main to Docker CI/CD
 
-
 on:
   push:
     branches:
