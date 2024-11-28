@@ -3,11 +3,11 @@ name: Feature to Dev CI/CD
 on:
   push:
     branches:
-      - dev  # Trigger when changes are pushed to dev branch
+      - dev  # Trigger when changes are pushed to the dev branch
 
 jobs:
-  build-and-test:
-    name: Build and Test Project
+  build-test-and-merge:
+    name: Build, Test, and Merge Dev into Main
     runs-on: ubuntu-latest
 
     steps:
@@ -15,32 +15,38 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js (for both backend and frontend)
+      # Step 2: Set up Node.js for Backend
       - name: Set up Node.js for Backend
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      - name: Set up Node.js for Frontend
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      # Step 3: Install backend dependencies
+      # Step 3: Install Backend Dependencies
       - name: Install Backend Dependencies
         working-directory: ./backend
         run: npm install
 
-      # Step 4: Install frontend dependencies
+      # Step 4: Install Frontend Dependencies
       - name: Install Frontend Dependencies
         working-directory: ./frontend
         run: npm install
 
-      # Step 5: Run Unit Tests for both backend and frontend
+      # Step 5: Run Backend Unit Tests
       - name: Run Backend Unit Tests
         working-directory: ./backend
         run: npm test
 
+      # Step 6: Run Frontend Unit Tests
       - name: Run Frontend Unit Tests
         working-directory: ./frontend
         run: npm test
+
+      # Step 7: Merge Dev into Main
+      - name: Merge Dev into Main
+        uses: devmasx/merge-branch@v1.6.0
+        with:
+          type: merge            # Type de fusion : merge, squash, ou rebase
+          source_branch: dev     # Branche source
+          target_branch: main    # Branche cible
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
