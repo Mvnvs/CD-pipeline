@@ -43,7 +43,7 @@ jobs:
 
       # Step 7: Merge Dev into Main
       - name: Merge Dev into Main
-        uses: devmasx/merge-branch@v1.6.0
+        uses: devmasx/merge-branch@v1.3.0
         with:
           type: merge            # Type de fusion : merge, squash, ou rebase
           source_branch: dev     # Branche source
