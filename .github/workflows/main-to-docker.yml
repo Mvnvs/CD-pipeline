@@ -1,4 +1,4 @@
-name: Main to Docker CI/CD
+name: CI/CD for Main Branch
 
 on:
   workflow_run:
@@ -8,54 +8,52 @@ on:
 
 jobs:
   build-and-test:
-    name: Build, Test, and Run E2E
     runs-on: ubuntu-latest
 
     steps:
       # Step 1: Checkout the code
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js (for both backend and frontend)
-      - name: Set up Node.js for Backend
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      - name: Set up Node.js for Frontend
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      # Step 3: Install dependencies for frontend and backend
-      - name: Install Backend Dependencies
+      # Step 3: Install dependencies for Backend
+      - name: Install dependencies for Backend
         working-directory: ./backend
         run: npm install
 
-      - name: Install Frontend Dependencies
+      # Step 4: Install dependencies for Frontend
+      - name: Install dependencies for Frontend
         working-directory: ./frontend
         run: npm install
 
-      - name: Install e2e Dependencies
-        working-directory: ./e2e-tests
-        run: npm install
-
-      # Step 4: Run Unit Tests for both backend and frontend
+      # Step 5: Run Backend Unit Tests
       - name: Run Backend Unit Tests
         working-directory: ./backend
         run: npm test
 
+      # Step 6: Run Frontend Unit Tests
       - name: Run Frontend Unit Tests
         working-directory: ./frontend
         run: npm test
 
+      # Step 7: Install E2E Test Dependencies
+      - name: Install E2E Dependencies
+        working-directory: ./e2e-tests
+        run: npm install
+
+      # Step 8: Build and Push Docker Images
       - name: Build and Push Docker Images
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: |
-        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-        docker build -t $DOCKER_USERNAME/backend ./backend
-        docker build -t $DOCKER_USERNAME/frontend ./frontend
-        docker push $DOCKER_USERNAME/backend
-        docker push $DOCKER_USERNAME/frontend
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker build -t $DOCKER_USERNAME/backend ./backend
+          docker build -t $DOCKER_USERNAME/frontend ./frontend
+          docker push $DOCKER_USERNAME/backend
+          docker push $DOCKER_USERNAME/frontend
