@@ -6,6 +6,7 @@ on:
     types:
       - completed
 
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -38,23 +39,24 @@ jobs:
       run: |
         cd frontend
         npm test
-        
+   
     - name: Install Selenium WebDriver and ChromeDriver
       run: |
-        # Installer les dépendances nécessaires pour selenium-webdriver et chromedriver
-        npm install selenium-webdriver chromedriver
-
+          
+          npm install selenium-webdriver chromedriver
+  
     - name: Start the Application
       run: |
-        cd frontend
-        npm run start &
-        sleep 10  # Attendre que l'application se lance
-
+          cd frontend
+          npm run start &
+          sleep 10  
+  
     - name: Run E2E tests
       run: |
-        cd e2e-tests
-        npm install
-        npx mocha test.js
+          cd e2e-tests
+          npm install
+          npx mocha test.js    
+
     - name: Build and Push Docker Images
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
