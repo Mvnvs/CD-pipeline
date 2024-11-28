@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: ["CI/CD for Dev to Main"]
     types:
-      - completed
+      - completed
 
 jobs:
   build-and-test:
