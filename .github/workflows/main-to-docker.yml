@@ -40,13 +40,6 @@ jobs:
       - name: Install Selenium WebDriver and ChromeDriver
         run: npm install selenium-webdriver chromedriver --save-dev
 
-      # Étape 7 : Démarrage du serveur Frontend
-      - name: Start Frontend Application
-        working-directory: ./frontend
-        run: |
-          npm run start &
-          sleep 15 # Temps pour laisser le serveur démarrer
-
       # Étape 8 : Exécution des tests E2E
       - name: Run E2E tests
         working-directory: ./e2e-tests
