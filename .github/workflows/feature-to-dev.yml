@@ -43,11 +43,11 @@ jobs:
 
       # Merge Dev into Main (Automatique)
       - name: Merge Dev into Main
-        uses: peter-evans/create-pull-request@v5
+        uses: devmasx/merge-branch@v1.3.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main               # Branche cible
-          commit-message: "Auto-merge Dev into Main"
-          title: "Auto PR: Merge Dev into Main"
-          body: |
-            This Pull Request merges changes from `dev` into `main`.
+          type: merge            # Type de fusion : merge, squash, ou rebase
+          from_branch: dev       # Branche source
+          target_branch: main    # Branche cible
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
