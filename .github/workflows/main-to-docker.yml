@@ -38,6 +38,7 @@ jobs:
       run: |
         cd frontend
         npm test
+        
     - name: Install Selenium WebDriver and ChromeDriver
       run: |
         # Installer les dépendances nécessaires pour selenium-webdriver et chromedriver
@@ -54,7 +55,6 @@ jobs:
         cd e2e-tests
         npm install
         npx mocha test.js
-        
     - name: Build and Push Docker Images
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
